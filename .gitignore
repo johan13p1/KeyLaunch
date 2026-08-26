@@ -11,6 +11,14 @@ xcuserdata/
 # Private service configuration
 GoogleService-Info.plist
 **/GoogleService-Info.plist
+Secrets.xcconfig
+Private.xcconfig
+*.p8
+*.pem
+*.key
+*.mobileprovision
+serviceAccount*.json
+firebase-adminsdk*.json
 .env
 .env.*
 
