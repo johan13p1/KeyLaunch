@@ -2,6 +2,8 @@
 
 KeyLaunch ist eine native macOS-App zum Umbelegen der Funktionstasten und zum Starten von Apps, Websites oder Tastenkombinationen über eigene F-Key-Shortcuts.
 
+**Website:** [keylaunch.org](https://keylaunch.org/)
+
 ## Funktionen
 
 - Funktionstasten über macOS `hidutil` neu belegen
@@ -10,7 +12,7 @@ KeyLaunch ist eine native macOS-App zum Umbelegen der Funktionstasten und zum St
 - eigene Presets sowie Import der vorhandenen Belegung
 - optionaler Hintergrundstart über einen LaunchAgent
 - deutsch- und englischsprachige Oberfläche
-- Account- und Lizenzfunktionen über Firebase
+- Accountfunktionen über Firebase; die Lizenzaktivierung befindet sich noch in Entwicklung
 - App-Updates über Sparkle
 
 ## Technik
@@ -49,4 +51,4 @@ KeyLaunch/
 
 ## Status
 
-Eigenständiges Lern- und Portfolio-Projekt. Release-Dienste und Signierung müssen für einen eigenen Build mit eigenen Kennungen konfiguriert werden.
+Eigenständiges Lern- und Portfolio-Projekt. Die Kernfunktionen zur Tastenbelegung sind nutzbar; Account-, Lizenz- und Release-Funktionen befinden sich teilweise noch in Entwicklung. Signierung und Firebase müssen für einen eigenen Build mit eigenen Kennungen konfiguriert werden.
