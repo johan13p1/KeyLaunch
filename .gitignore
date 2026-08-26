@@ -1,0 +1,29 @@
+# Xcode
+build/
+DerivedData/
+xcuserdata/
+*.xcuserstate
+*.xccheckout
+*.xcscmblueprint
+.swiftpm/
+.build/
+
+# Private service configuration
+GoogleService-Info.plist
+**/GoogleService-Info.plist
+.env
+.env.*
+
+# Release artifacts
+*.dmg
+*.pkg
+*.zip
+*.app
+
+# Local tooling
+.claude/
+CLAUDE.md
+graphify-out/
+
+# macOS
+.DS_Store

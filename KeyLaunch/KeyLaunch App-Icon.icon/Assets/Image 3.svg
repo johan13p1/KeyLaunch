@@ -1,0 +1,9 @@
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <title>KeyLaunch Key Swap Icon Symmetric</title>
+  <g stroke="#F5F5F7" stroke-width="54" stroke-linejoin="round">
+    <rect x="226" y="214" width="266" height="266" rx="68"/>
+    <rect x="532" y="544" width="266" height="266" rx="68"/>
+  </g>
+  <path id="swap-arrow" fill="#36A8FF" d="M574 248H660C730 248 786 304 786 374V388H818C840 388 851 414 836 429L756 509C745 520 727 520 716 509L636 429C621 414 632 388 654 388H712V374C712 345 689 322 660 322H574C554 322 538 305 538 285C538 265 554 248 574 248Z"/>
+  <path fill="#F5F5F7" d="M574 248H660C730 248 786 304 786 374V388H818C840 388 851 414 836 429L756 509C745 520 727 520 716 509L636 429C621 414 632 388 654 388H712V374C712 345 689 322 660 322H574C554 322 538 305 538 285C538 265 554 248 574 248Z" transform="rotate(180 512 512)"/>
+</svg>
