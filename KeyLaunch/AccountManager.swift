@@ -9,7 +9,6 @@ final class AccountManager: ObservableObject {
     @Published private(set) var email: String?
     @Published private(set) var isSignedIn = false
 
-    private let temporaryTestLicenseKey = "KL4X9A-7M2Q8P"
     private var authStateHandle: AuthStateDidChangeListenerHandle?
 
     private init() {}
@@ -77,12 +76,6 @@ final class AccountManager: ObservableObject {
         }
 
         _ = try await user.getIDToken()
-
-        // TEMPORARY TEST LICENSE: remove this block when Firebase license activation is connected.
-        if licenseKey.uppercased() == temporaryTestLicenseKey {
-            PremiumManager.shared.unlockForCurrentDevice()
-            return
-        }
 
         throw LicenseActivationError.backendNotConfigured
     }
