@@ -84,12 +84,6 @@ struct AppSettingsView: View {
 
                         settingsFooter
 
-                        // TEMPORARY TEST PREMIUM RESET: remove this button when Firebase license activation is connected.
-                        Button(language.resetPremiumTitle) {
-                            viewModel.resetPremiumUnlock()
-                        }
-                        .buttonStyle(SettingsSecondaryButtonStyle())
-                        .frame(maxWidth: .infinity, alignment: .center)
                     }
                     .padding(.horizontal, 20)
                     .padding(.top, 22)
