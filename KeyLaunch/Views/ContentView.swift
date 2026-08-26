@@ -4,7 +4,6 @@ struct ContentView: View {
     @StateObject private var viewModel = KeyLaunchViewModel()
     @StateObject private var permissions = PermissionCenter.shared
     @State private var isShowingSettings = false
-    @State private var shouldFocusPremiumSettings = false
     @State private var isSidebarCollapsed = false
     @State private var profileBeingRenamed: KeyLaunchProfile?
     @State private var profilePendingDeletion: KeyLaunchProfile?
@@ -40,10 +39,8 @@ struct ContentView: View {
             } else if isShowingSettings {
                 AppSettingsView(
                     permissions: permissions,
-                    viewModel: viewModel,
-                    focusPremium: shouldFocusPremiumSettings
+                    viewModel: viewModel
                 ) {
-                    shouldFocusPremiumSettings = false
                     isShowingSettings = false
                 }
                 .transition(.opacity)
@@ -86,13 +83,6 @@ struct ContentView: View {
         }
         .onAppear {
             viewModel.prepareEnvironmentIfNeeded()
-        }
-        .onChange(of: viewModel.premiumUpsellRequestID) { _, requestID in
-            guard requestID > 0 else {
-                return
-            }
-
-            showPremiumSettings()
         }
     }
 
@@ -199,28 +189,15 @@ struct ContentView: View {
     private var sidebarHeaderIconButtons: some View {
         if isSidebarCollapsed {
             VStack(spacing: 8) {
-                premiumButton
                 settingsIconButton
                 sidebarToggleButton
             }
         } else {
             HStack(spacing: 8) {
-                premiumButton
                 settingsIconButton
                 sidebarToggleButton
             }
         }
-    }
-
-    private var premiumButton: some View {
-        Button {
-            isShowingSettings = true
-        } label: {
-            Image(systemName: viewModel.isPremiumUnlocked ? "checkmark.seal.fill" : "lock.fill")
-                .frame(width: 18, height: 18)
-        }
-        .buttonStyle(SidebarIconButtonStyle(isEmphasized: viewModel.isPremiumUnlocked))
-        .help(viewModel.isPremiumUnlocked ? language.premiumUnlockedTitle : language.premiumLockedTitle)
     }
 
     private var settingsIconButton: some View {
@@ -243,11 +220,6 @@ struct ContentView: View {
         }
         .buttonStyle(SidebarIconButtonStyle())
         .help(language.profilesTitle)
-    }
-
-    private func showPremiumSettings() {
-        shouldFocusPremiumSettings = true
-        isShowingSettings = true
     }
 
     private var sidebarProfiles: some View {
@@ -307,7 +279,6 @@ struct ContentView: View {
                             .frame(width: 14, height: 14)
                     }
                     .buttonStyle(SidebarInlineIconButtonStyle())
-                    .disabled(!viewModel.isPremiumUnlocked)
                     .help(language.renameProfileTitle)
 
                     Button {
@@ -336,47 +307,32 @@ struct ContentView: View {
 
     private var newProfileButton: some View {
         Button {
-            if viewModel.isPremiumUnlocked {
-                viewModel.createProfile()
-            } else {
-                showPremiumSettings()
-            }
+            viewModel.createProfile()
         } label: {
             sidebarCompactActionLabel(title: language.newProfileTitle, systemImage: "plus")
         }
-        .buttonStyle(SidebarActionButtonStyle(isDimmed: !viewModel.isPremiumUnlocked))
+        .buttonStyle(SidebarActionButtonStyle())
         .help(language.newProfileTitle)
     }
 
-    @ViewBuilder
     private var presetsMenu: some View {
-        if viewModel.isPremiumUnlocked {
-            Menu {
-                ForEach(KeyLaunchPreset.all) { preset in
-                    Button {
-                        viewModel.createProfile(from: preset)
-                    } label: {
-                        VStack(alignment: .leading) {
-                            Text(preset.name)
-                            Text(preset.detail)
-                        }
+        Menu {
+            ForEach(KeyLaunchPreset.all) { preset in
+                Button {
+                    viewModel.createProfile(from: preset)
+                } label: {
+                    VStack(alignment: .leading) {
+                        Text(preset.name)
+                        Text(preset.detail)
                     }
                 }
-            } label: {
-                sidebarCompactActionLabel(title: language.presetsTitle, systemImage: "sparkles")
             }
-            .menuStyle(.borderlessButton)
-            .buttonStyle(SidebarActionButtonStyle(isDimmed: false))
-            .help(language.presetsTitle)
-        } else {
-            Button {
-                showPremiumSettings()
-            } label: {
-                sidebarCompactActionLabel(title: language.presetsTitle, systemImage: "sparkles")
-            }
-            .buttonStyle(SidebarActionButtonStyle(isDimmed: true))
-            .help(language.presetsTitle)
+        } label: {
+            sidebarCompactActionLabel(title: language.presetsTitle, systemImage: "sparkles")
         }
+        .menuStyle(.borderlessButton)
+        .buttonStyle(SidebarActionButtonStyle())
+        .help(language.presetsTitle)
     }
 
     private var sidebarAssignedApplications: some View {
@@ -391,11 +347,7 @@ struct ContentView: View {
                 Spacer()
 
                 Button {
-                    if viewModel.isPremiumUnlocked {
-                        viewModel.chooseApplicationForActiveProfile()
-                    } else {
-                        showPremiumSettings()
-                    }
+                    viewModel.chooseApplicationForActiveProfile()
                 } label: {
                     Image(systemName: "plus")
                         .frame(width: 16, height: 16)
@@ -431,7 +383,6 @@ struct ContentView: View {
                             }
                             .buttonStyle(.borderless)
                             .foregroundStyle(.secondary)
-                            .disabled(!viewModel.isPremiumUnlocked)
                         }
                         .padding(.horizontal, 10)
                         .padding(.vertical, 8)
@@ -597,19 +548,12 @@ struct ContentView: View {
             ) {
                 Text(language.systemFunctionTitle).tag(KeyLaunchViewModel.ActionMode.systemFunction)
                 Text(language.openApplicationTitle).tag(KeyLaunchViewModel.ActionMode.openApplication)
-                Label(
-                    language.openWebsiteTitle,
-                    systemImage: viewModel.isPremiumUnlocked ? "globe" : "lock.fill"
-                )
+                Label(language.openWebsiteTitle, systemImage: "globe")
                     .tag(KeyLaunchViewModel.ActionMode.openWebsite)
             }
             .pickerStyle(.menu)
             .tint(.primary)
             .frame(maxWidth: 220, alignment: .leading)
-
-            if !viewModel.isPremiumUnlocked {
-                freeUsageSummary
-            }
 
             switch viewModel.selectedActionMode {
             case .systemFunction:
@@ -667,44 +611,6 @@ struct ContentView: View {
         }
         .frame(maxWidth: .infinity, minHeight: 128, alignment: .topLeading)
         .panelStyle()
-    }
-
-    private var freeUsageSummary: some View {
-        Button {
-            showPremiumSettings()
-        } label: {
-            HStack(spacing: 8) {
-                usageText(language.systemFunctionTitle, usage: viewModel.systemFunctionUsage)
-
-                Text("·")
-                    .foregroundStyle(.tertiary)
-
-                usageText(language.openApplicationTitle, usage: viewModel.openApplicationUsage, showsLock: true)
-            }
-        }
-        .buttonStyle(.plain)
-        .help(language.premiumLockedTitle)
-    }
-
-    private func usageText(
-        _ title: String,
-        usage: (used: Int, limit: Int),
-        showsLock: Bool = false
-    ) -> some View {
-        HStack(spacing: 4) {
-            Text(title)
-                .lineLimit(1)
-
-            Text("\(usage.used)/\(usage.limit)")
-                .fontWeight(.semibold)
-
-            if showsLock {
-                Image(systemName: "lock.fill")
-                    .font(.system(size: 8, weight: .bold))
-            }
-        }
-        .font(.system(size: 11, weight: .medium))
-        .foregroundStyle(.secondary)
     }
 
     private var mappingsSection: some View {
@@ -887,48 +793,39 @@ private struct SidebarRowButtonStyle: ButtonStyle {
 }
 
 private struct SidebarActionButtonStyle: ButtonStyle {
-    var isDimmed = false
     @Environment(\.isEnabled) private var isEnabled
 
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .padding(.horizontal, 10)
             .padding(.vertical, 10)
-            .foregroundStyle(isDimmed ? .secondary : .primary)
+            .foregroundStyle(.primary)
             .background(
                 RoundedRectangle(cornerRadius: 14, style: .continuous)
-                    .fill(configuration.isPressed ? Color.primary.opacity(0.12) : Color(nsColor: .controlBackgroundColor).opacity(isDimmed ? 0.36 : 0.62))
+                    .fill(configuration.isPressed ? Color.primary.opacity(0.12) : Color(nsColor: .controlBackgroundColor).opacity(0.62))
             )
             .overlay(
                 RoundedRectangle(cornerRadius: 14, style: .continuous)
                     .stroke(Color(nsColor: .separatorColor).opacity(0.28), lineWidth: 1)
             )
-            .opacity(isEnabled ? (isDimmed ? 0.62 : 1) : 0.46)
+            .opacity(isEnabled ? 1 : 0.46)
     }
 }
 
 private struct SidebarIconButtonStyle: ButtonStyle {
-    var isEmphasized = false
-
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .font(.system(size: 13, weight: .semibold))
             .padding(7)
-            .foregroundStyle(isEmphasized ? Color(nsColor: .windowBackgroundColor) : .primary)
+            .foregroundStyle(.primary)
             .background(
                 Circle()
-                    .fill(backgroundColor(isPressed: configuration.isPressed))
+                    .fill(
+                        configuration.isPressed
+                            ? Color.primary.opacity(0.14)
+                            : Color(nsColor: .controlBackgroundColor).opacity(0.72)
+                    )
             )
-    }
-
-    private func backgroundColor(isPressed: Bool) -> Color {
-        if isEmphasized {
-            return isPressed ? Color.primary.opacity(0.82) : Color.primary
-        }
-
-        return isPressed
-            ? Color.primary.opacity(0.14)
-            : Color(nsColor: .controlBackgroundColor).opacity(0.72)
     }
 }
 

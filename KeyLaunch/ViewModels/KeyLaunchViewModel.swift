@@ -24,14 +24,9 @@ final class KeyLaunchViewModel: ObservableObject {
     @Published private(set) var runtimeProfileID = KeyLaunchProfileState.defaultProfile().id
     @Published private(set) var savedMappings: [KeyMapping] = []
     @Published private(set) var isBackgroundStartEnabled = KeyRemappingService.shared.isAppShortcutBackgroundStartEnabled()
-    @Published private(set) var isPremiumUnlocked = PremiumManager.shared.hasPremiumAccess
-    @Published private(set) var premiumUpsellRequestID = 0
 
     private var hasPreparedEnvironment = false
-    private var premiumCancellable: AnyCancellable?
     private var appActivationObserver: Any?
-    private let freeSystemFunctionLimit = 2
-    private let freeOpenApplicationLimit = 1
 
     init() {
         let cachedState = KeyRemappingService.shared.cachedProfileState().normalized()
@@ -40,12 +35,6 @@ final class KeyLaunchViewModel: ObservableObject {
         if !savedMappings.isEmpty {
             statusMessage = "\(savedMappings.count) keybind\(savedMappings.count == 1 ? "" : "s") loaded."
         }
-
-        premiumCancellable = PremiumManager.shared.$hasPremiumAccess
-            .sink { [weak self] hasPremiumAccess in
-                self?.isPremiumUnlocked = hasPremiumAccess
-                self?.handleActiveApplicationChange()
-            }
 
         startAppActivationMonitor()
     }
@@ -87,14 +76,6 @@ final class KeyLaunchViewModel: ObservableObject {
         activeProfile?.assignedApplications ?? []
     }
 
-    var systemFunctionUsage: (used: Int, limit: Int) {
-        (savedMappings.filter { $0.action.systemFunction != nil }.count, freeSystemFunctionLimit)
-    }
-
-    var openApplicationUsage: (used: Int, limit: Int) {
-        (savedMappings.filter { $0.action.applicationTarget != nil }.count, freeOpenApplicationLimit)
-    }
-
     var canDeleteActiveProfile: Bool {
         guard let activeProfile else {
             return false
@@ -104,7 +85,7 @@ final class KeyLaunchViewModel: ObservableObject {
     }
 
     func canDeleteProfile(_ profile: KeyLaunchProfile) -> Bool {
-        isPremiumUnlocked && !profile.isDefault && profiles.count > 1
+        !profile.isDefault && profiles.count > 1
     }
 
     func selectKey(_ key: SourceKey) {
@@ -130,11 +111,6 @@ final class KeyLaunchViewModel: ObservableObject {
         } else {
             updatedMappings.append(mapping)
             updatedMappings.sort { $0.source.sortOrder < $1.source.sortOrder }
-        }
-
-        guard canSaveFreeMappingSet(updatedMappings) else {
-            requestPremiumUpgrade(message: "Premium unlocks more keybinds.")
-            return
         }
 
         setMappingsForActiveProfile(updatedMappings)
@@ -179,11 +155,6 @@ final class KeyLaunchViewModel: ObservableObject {
     }
 
     func selectActionMode(_ mode: ActionMode) {
-        if mode == .openWebsite && !isPremiumUnlocked {
-            requestPremiumUpgrade(message: "Open Website is a Premium feature.")
-            return
-        }
-
         selectedActionMode = mode
     }
 
@@ -263,30 +234,11 @@ final class KeyLaunchViewModel: ObservableObject {
         isBackgroundStartEnabled = KeyRemappingService.shared.isAppShortcutBackgroundStartEnabled()
     }
 
-    func unlockPremiumForCurrentDevice() {
-        PremiumManager.shared.unlockForCurrentDevice()
-        statusMessage = "Premium features are unlocked on this Mac."
-    }
-
-    func resetPremiumUnlock() {
-        PremiumManager.shared.resetLocalUnlock()
-        statusMessage = "Premium preview access was reset."
-    }
-
-    func requestPremiumUpgrade(message: String = "This is a Premium feature.") {
-        statusMessage = message
-        premiumUpsellRequestID += 1
-    }
-
     func switchProfile(_ profile: KeyLaunchProfile) {
         switchProfile(id: profile.id)
     }
 
     func createProfile() {
-        guard requirePremiumFeature() else {
-            return
-        }
-
         let profile = KeyLaunchProfile(name: nextProfileName())
         profiles.append(profile)
         activeProfileID = profile.id
@@ -295,10 +247,6 @@ final class KeyLaunchViewModel: ObservableObject {
     }
 
     func createProfile(from preset: KeyLaunchPreset) {
-        guard requirePremiumFeature() else {
-            return
-        }
-
         var profile = KeyLaunchProfile(
             name: uniqueProfileName(for: preset.name),
             mappings: preset.mappings
@@ -338,10 +286,6 @@ final class KeyLaunchViewModel: ObservableObject {
     }
 
     func renameProfile(_ profile: KeyLaunchProfile, to newName: String) {
-        guard requirePremiumFeature() else {
-            return
-        }
-
         let cleanedName = newName.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !cleanedName.isEmpty,
               let index = profiles.firstIndex(where: { $0.id == profile.id })
@@ -354,10 +298,6 @@ final class KeyLaunchViewModel: ObservableObject {
     }
 
     func chooseApplicationForActiveProfile() {
-        guard requirePremiumFeature() else {
-            return
-        }
-
         let panel = NSOpenPanel()
         panel.allowedContentTypes = [.application]
         panel.allowsMultipleSelection = false
@@ -387,9 +327,7 @@ final class KeyLaunchViewModel: ObservableObject {
     }
 
     func removeAssignedApplication(_ target: ApplicationLaunchTarget) {
-        guard requirePremiumFeature(),
-              let profileIndex = profiles.firstIndex(where: { $0.id == activeProfileID })
-        else {
+        guard let profileIndex = profiles.firstIndex(where: { $0.id == activeProfileID }) else {
             return
         }
 
@@ -423,11 +361,6 @@ final class KeyLaunchViewModel: ObservableObject {
             requestAccessibilityIfNeeded()
             return KeyMapping(source: source, action: .openApplication(selectedApplication))
         case .openWebsite:
-            guard isPremiumUnlocked else {
-                requestPremiumUpgrade(message: "Open Website is a Premium feature.")
-                return nil
-            }
-
             guard let websiteURL = normalizedWebsiteURL(from: websiteURLString) else {
                 statusMessage = "Enter a valid website URL."
                 return nil
@@ -554,28 +487,6 @@ final class KeyLaunchViewModel: ObservableObject {
         AppShortcutMonitor.shared.updateMappings(runtimeMappings)
     }
 
-    private func requirePremiumFeature() -> Bool {
-        guard isPremiumUnlocked else {
-            requestPremiumUpgrade()
-            return false
-        }
-
-        return true
-    }
-
-    private func canSaveFreeMappingSet(_ mappings: [KeyMapping]) -> Bool {
-        guard !isPremiumUnlocked else {
-            return true
-        }
-
-        let systemFunctionCount = mappings.filter { $0.action.systemFunction != nil }.count
-        let openApplicationCount = mappings.filter { $0.action.applicationTarget != nil }.count
-        let websiteCount = mappings.filter { $0.action.websiteTarget != nil }.count
-        return systemFunctionCount <= freeSystemFunctionLimit
-            && openApplicationCount <= freeOpenApplicationLimit
-            && websiteCount == 0
-    }
-
     private func nextProfileName() -> String {
         var index = profiles.count + 1
         var name = "Profile \(index)"
@@ -621,8 +532,7 @@ final class KeyLaunchViewModel: ObservableObject {
     }
 
     private func switchProfile(id: UUID) {
-        guard isPremiumUnlocked || id == defaultProfileID,
-              activeProfileID != id,
+        guard activeProfileID != id,
               let profile = profiles.first(where: { $0.id == id })
         else {
             return
@@ -674,8 +584,7 @@ final class KeyLaunchViewModel: ObservableObject {
     }
 
     private func refreshRuntimeProfileForCurrentApplication() {
-        guard isPremiumUnlocked,
-              let runningApplication = NSWorkspace.shared.frontmostApplication,
+        guard let runningApplication = NSWorkspace.shared.frontmostApplication,
               let matchedProfile = profile(for: runningApplication)
         else {
             runtimeProfileID = activeProfileID

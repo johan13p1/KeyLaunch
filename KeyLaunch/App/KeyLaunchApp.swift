@@ -1,5 +1,4 @@
 import AppKit
-import FirebaseCore
 import SwiftUI
 
 @main
@@ -29,7 +28,6 @@ final class KeyLaunchAppDelegate: NSObject, NSApplicationDelegate {
     }
 
     func applicationDidFinishLaunching(_ notification: Notification) {
-        configureFirebaseIfNeeded()
         UpdateManager.shared.startUpdaterIfAppropriate(isBackgroundLaunch: isBackgroundLaunch)
 
         guard isBackgroundLaunch else {
@@ -74,15 +72,5 @@ final class KeyLaunchAppDelegate: NSObject, NSApplicationDelegate {
         NSApp.windows.forEach { window in
             window.orderOut(nil)
         }
-    }
-
-    private func configureFirebaseIfNeeded() {
-        guard FirebaseApp.app() == nil else {
-            AccountManager.shared.startListening()
-            return
-        }
-
-        FirebaseApp.configure()
-        AccountManager.shared.startListening()
     }
 }

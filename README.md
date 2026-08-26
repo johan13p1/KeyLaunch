@@ -1,6 +1,6 @@
 # KeyLaunch
 
-KeyLaunch ist eine native macOS-App zum Umbelegen der Funktionstasten und zum Starten von Apps, Websites oder Tastenkombinationen über eigene F-Key-Shortcuts.
+KeyLaunch ist eine native macOS-App zum Umbelegen der Funktionstasten und zum Starten von Apps, Websites oder Systemfunktionen über eigene F-Key-Shortcuts.
 
 **Website:** [keylaunch.org](https://keylaunch.org/)
 
@@ -12,15 +12,15 @@ KeyLaunch ist eine native macOS-App zum Umbelegen der Funktionstasten und zum St
 - eigene Presets sowie Import der vorhandenen Belegung
 - optionaler Hintergrundstart über einen LaunchAgent
 - deutsch- und englischsprachige Oberfläche
-- Accountfunktionen über Firebase; die Lizenzaktivierung befindet sich noch in Entwicklung
 - App-Updates über Sparkle
+
+Alle Funktionen sind ohne Einschränkung nutzbar. Es gibt weder einen Account noch eine Bezahlversion.
 
 ## Technik
 
 - Swift und SwiftUI
 - AppKit und macOS Accessibility API
 - `hidutil` und `launchd`
-- Firebase Authentication
 - Sparkle
 
 Die Belegungen werden lokal gespeichert. Für globale Tastenkürzel benötigt KeyLaunch die Bedienungshilfen-Berechtigung von macOS.
@@ -30,25 +30,34 @@ Die Belegungen werden lokal gespeichert. Für globale Tastenkürzel benötigt Ke
 Voraussetzungen: Xcode und macOS 15.6 oder neuer.
 
 1. Das Repository klonen.
-2. Eine eigene Firebase-iOS/macOS-App anlegen und deren `GoogleService-Info.plist` nach `KeyLaunch/` kopieren.
-3. `KeyLaunch.xcodeproj` öffnen und die Swift-Package-Abhängigkeiten auflösen lassen.
-4. Das Scheme **KeyLaunch** starten.
+2. `KeyLaunch.xcodeproj` öffnen und die Swift-Package-Abhängigkeit (Sparkle) auflösen lassen.
+3. Das Scheme **KeyLaunch** starten.
 
-Die Firebase-Konfiguration wird absichtlich nicht versioniert. Die Kernfunktionen zur Tastenbelegung liegen vollständig im Repository.
+Für einen eigenen Build muss die Signierung auf die eigene Entwicklerkennung gestellt werden.
 
 ## Aufbau
 
 ```text
 KeyLaunch/
-├── KeyLaunchViewModel.swift       zentrale UI- und Profilsteuerung
-├── KeyRemappingService.swift     hidutil-, LaunchAgent- und Persistenzlogik
-├── AppShortcutMonitor.swift      globale App-Shortcuts
-├── PermissionCenter.swift        macOS-Berechtigungen
-├── AccountManager.swift          Firebase-Accountfunktionen
-├── UpdateManager.swift           Sparkle-Updates
-└── AppSettingsView.swift         Einstellungen, Profile und Account
+├── App/            App-Einstieg und Lebenszyklus
+├── Models/         Tasten, Aktionen, Profile und Presets
+├── Services/       hidutil, LaunchAgent, Shortcuts, Berechtigungen, Updates
+├── ViewModels/     zentrale UI- und Profilsteuerung
+├── Views/          Hauptfenster, Einstellungen und Ersteinrichtung
+├── Localization/   deutsche und englische Texte
+└── Resources/      App-Icon und Assets
 ```
+
+Zentrale Dateien:
+
+| Datei | Aufgabe |
+| --- | --- |
+| `ViewModels/KeyLaunchViewModel.swift` | Zustand der Oberfläche, Profile und Keybinds |
+| `Services/KeyRemappingService.swift` | `hidutil`-Aufrufe, LaunchAgent und Persistenz |
+| `Services/AppShortcutMonitor.swift` | globale App- und Website-Shortcuts |
+| `Services/PermissionCenter.swift` | macOS-Berechtigungen |
+| `Services/UpdateManager.swift` | Sparkle-Updates |
 
 ## Status
 
-Eigenständiges Lern- und Portfolio-Projekt. Die Kernfunktionen zur Tastenbelegung sind nutzbar; Account-, Lizenz- und Release-Funktionen befinden sich teilweise noch in Entwicklung. Signierung und Firebase müssen für einen eigenen Build mit eigenen Kennungen konfiguriert werden.
+Eigenständiges Lern- und Portfolio-Projekt, das unter der macOS-Bedienungshilfen-Berechtigung Tastenbelegungen setzt.

@@ -7,8 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		04EB318D2FB8BCBD00DB8218 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 04EB318D2FB8BCBD00DB8219 /* FirebaseAuth */; };
-		04EB318D2FB8BCBD00DB8216 /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = 04EB318D2FB8BCBD00DB8217 /* FirebaseCore */; };
 		A1B2C3D42F00000100A00001 /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = A1B2C3D42F00000200A00001 /* Sparkle */; };
 /* End PBXBuildFile section */
 
@@ -30,8 +28,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				A1B2C3D42F00000100A00001 /* Sparkle in Frameworks */,
-				04EB318D2FB8BCBD00DB8216 /* FirebaseCore in Frameworks */,
-				04EB318D2FB8BCBD00DB8218 /* FirebaseAuth in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -75,8 +71,6 @@
 			name = KeyLaunch;
 			packageProductDependencies = (
 				A1B2C3D42F00000200A00001 /* Sparkle */,
-				04EB318D2FB8BCBD00DB8217 /* FirebaseCore */,
-				04EB318D2FB8BCBD00DB8219 /* FirebaseAuth */,
 			);
 			productName = KeyLaunch;
 			productReference = 048D8E3D2FADF37100DAFDC1 /* KeyLaunch.app */;
@@ -108,7 +102,6 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				A1B2C3D42F00000300A00001 /* XCRemoteSwiftPackageReference "Sparkle" */,
-				04EB318D2FB8BCBD00DB8215 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 048D8E3E2FADF37100DAFDC1 /* Products */;
@@ -269,6 +262,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = FZL5999DHB;
 				ENABLE_APP_SANDBOX = NO;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
@@ -305,6 +299,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = FZL5999DHB;
 				ENABLE_APP_SANDBOX = NO;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
@@ -355,14 +350,6 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		04EB318D2FB8BCBD00DB8215 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 12.13.0;
-			};
-		};
 		A1B2C3D42F00000300A00001 /* XCRemoteSwiftPackageReference "Sparkle" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/sparkle-project/Sparkle";
@@ -374,16 +361,6 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		04EB318D2FB8BCBD00DB8219 /* FirebaseAuth */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 04EB318D2FB8BCBD00DB8215 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = FirebaseAuth;
-		};
-		04EB318D2FB8BCBD00DB8217 /* FirebaseCore */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 04EB318D2FB8BCBD00DB8215 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = FirebaseCore;
-		};
 		A1B2C3D42F00000200A00001 /* Sparkle */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = A1B2C3D42F00000300A00001 /* XCRemoteSwiftPackageReference "Sparkle" */;
