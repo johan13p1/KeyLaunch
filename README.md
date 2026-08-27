@@ -1,63 +1,63 @@
 # KeyLaunch
 
-KeyLaunch ist eine native macOS-App zum Umbelegen der Funktionstasten und zum Starten von Apps, Websites oder Systemfunktionen über eigene F-Key-Shortcuts.
+KeyLaunch is a native macOS app for remapping function keys and launching apps, websites, or system functions with custom F-key shortcuts.
 
 **Website:** [keylaunch.org](https://keylaunch.org/)
 
-## Funktionen
+## Features
 
-- Funktionstasten über macOS `hidutil` neu belegen
-- Apps und Websites per F-Taste öffnen
-- mehrere Profile und appabhängige Belegungen
-- eigene Presets sowie Import der vorhandenen Belegung
-- optionaler Hintergrundstart über einen LaunchAgent
-- deutsch- und englischsprachige Oberfläche
-- App-Updates über Sparkle
+- Remap function keys using macOS `hidutil`
+- Open apps and websites with an F-key
+- Multiple profiles and app-specific mappings
+- Custom presets and importing existing mappings
+- Optional background launch via a LaunchAgent
+- German and English interface
+- App updates through Sparkle
 
-Alle Funktionen sind ohne Einschränkung nutzbar. Es gibt weder einen Account noch eine Bezahlversion.
+All features are available without restrictions. There is no account and no paid version.
 
-## Technik
+## Technology
 
-- Swift und SwiftUI
-- AppKit und macOS Accessibility API
-- `hidutil` und `launchd`
+- Swift and SwiftUI
+- AppKit and the macOS Accessibility API
+- `hidutil` and `launchd`
 - Sparkle
 
-Die Belegungen werden lokal gespeichert. Für globale Tastenkürzel benötigt KeyLaunch die Bedienungshilfen-Berechtigung von macOS.
+Mappings are stored locally. KeyLaunch requires macOS Accessibility permission for global keyboard shortcuts.
 
-## Lokal bauen
+## Build locally
 
-Voraussetzungen: Xcode und macOS 15.6 oder neuer.
+Requirements: Xcode and macOS 15.6 or later.
 
-1. Das Repository klonen.
-2. `KeyLaunch.xcodeproj` öffnen und die Swift-Package-Abhängigkeit (Sparkle) auflösen lassen.
-3. Das Scheme **KeyLaunch** starten.
+1. Clone the repository.
+2. Open `KeyLaunch.xcodeproj` and let the Swift package dependency (Sparkle) resolve.
+3. Run the **KeyLaunch** scheme.
 
-Für einen eigenen Build muss die Signierung auf die eigene Entwicklerkennung gestellt werden.
+For your own build, signing must be set to your own developer identity.
 
-## Aufbau
+## Structure
 
 ```text
 KeyLaunch/
-├── App/            App-Einstieg und Lebenszyklus
-├── Models/         Tasten, Aktionen, Profile und Presets
-├── Services/       hidutil, LaunchAgent, Shortcuts, Berechtigungen, Updates
-├── ViewModels/     zentrale UI- und Profilsteuerung
-├── Views/          Hauptfenster, Einstellungen und Ersteinrichtung
-├── Localization/   deutsche und englische Texte
-└── Resources/      App-Icon und Assets
+├── App/            App entry point and lifecycle
+├── Models/         Keys, actions, profiles, and presets
+├── Services/       hidutil, LaunchAgent, shortcuts, permissions, updates
+├── ViewModels/     Central UI and profile management
+├── Views/          Main window, settings, and onboarding
+├── Localization/   German and English text
+└── Resources/      App icon and assets
 ```
 
-Zentrale Dateien:
+Key files:
 
-| Datei | Aufgabe |
+| File | Purpose |
 | --- | --- |
-| `ViewModels/KeyLaunchViewModel.swift` | Zustand der Oberfläche, Profile und Keybinds |
-| `Services/KeyRemappingService.swift` | `hidutil`-Aufrufe, LaunchAgent und Persistenz |
-| `Services/AppShortcutMonitor.swift` | globale App- und Website-Shortcuts |
-| `Services/PermissionCenter.swift` | macOS-Berechtigungen |
-| `Services/UpdateManager.swift` | Sparkle-Updates |
+| `ViewModels/KeyLaunchViewModel.swift` | UI state, profiles, and keybindings |
+| `Services/KeyRemappingService.swift` | `hidutil` calls, LaunchAgent, and persistence |
+| `Services/AppShortcutMonitor.swift` | Global app and website shortcuts |
+| `Services/PermissionCenter.swift` | macOS permissions |
+| `Services/UpdateManager.swift` | Sparkle updates |
 
 ## Status
 
-Eigenständiges Lern- und Portfolio-Projekt, das unter der macOS-Bedienungshilfen-Berechtigung Tastenbelegungen setzt.
+An independent learning and portfolio project that applies key mappings using macOS Accessibility permission.
