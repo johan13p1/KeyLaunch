@@ -4,6 +4,14 @@ KeyLaunch is a native macOS app for remapping function keys and launching apps, 
 
 **Website:** [keylaunch.org](https://keylaunch.org/)
 
+## Screenshots
+
+Create and manage function-key shortcuts with profiles.
+
+<a href="docs/screenshots/keybindings.png">
+  <img src="docs/screenshots/keybindings.png" alt="KeyLaunch keybinding editor with profiles and saved shortcuts" width="720">
+</a>
+
 ## Features
 
 - Remap function keys using macOS `hidutil`
